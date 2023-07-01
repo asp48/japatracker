@@ -1,2 +1,2 @@
 # japatracker
-Tracks japa count submitted by users on whatsapp through google sheet
+Collects japa count from users over Whatsapp and tracks the progress through google sheet
