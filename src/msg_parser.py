@@ -9,9 +9,9 @@ def get_japa_entries(messages: List[Message]) -> List[JapaEntry]:
     for message in messages:
         if message.date not in local_store:
             local_store[message.date] = {}
-        tokens = message.content.split(",")
-        contributor = tokens[0]
-        japa_count = int(tokens[1])
+        tokens = message.content.split(")")
+        contributor = tokens[0].strip(" ").strip("(").strip(" ").lower()
+        japa_count = int(tokens[1].strip("\n").strip(" "))
         local_store[message.date][contributor] = local_store.get(message.date).get(contributor, 0) + japa_count
     japa_entries = []
     for date in local_store.keys():

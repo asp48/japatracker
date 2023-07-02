@@ -28,6 +28,7 @@ def get_msgs_from_browser(browser: str, group_name: str) -> List[Message]:
             messages.append(message)
         except Exception as e:
             print(f"Could not process: {msg_element.text}, reason: {str(e)}")
+    browser.quit()
     return messages
 
 
