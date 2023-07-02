@@ -8,3 +8,5 @@ chrome_app_path = "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrom
 implicit_wait_timeout = 10
 
 output_dir = "/tmp/japa_tracker_output"
+
+mock = True

@@ -1,8 +1,9 @@
 import enum
-from src.configs import env
-import util
 
 from selenium import webdriver
+
+import util
+from src.configs import env
 
 
 class BrowserType(enum.Enum):
