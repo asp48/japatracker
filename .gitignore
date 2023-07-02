@@ -3,3 +3,7 @@ chromedriver
 __pycache__
 
 .idea
+
+secrets
+
+remote_debug_profile

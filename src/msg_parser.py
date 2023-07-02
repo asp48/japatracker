@@ -5,17 +5,11 @@ from src.models.message import Message
 
 
 def get_japa_entries(messages: List[Message]) -> List[JapaEntry]:
-    local_store = {}
+    japa_entries = []
     for message in messages:
-        if message.date not in local_store:
-            local_store[message.date] = {}
         tokens = message.content.split(")")
         contributor = tokens[0].strip(" ").strip("(").strip(" ").lower()
         japa_count = int(tokens[1].strip("\n").strip(" "))
-        local_store[message.date][contributor] = local_store.get(message.date).get(contributor, 0) + japa_count
-    japa_entries = []
-    for date in local_store.keys():
-        for contributor, japa_count in local_store[date].items():
-            japa_entry = JapaEntry(date, contributor, japa_count)
-            japa_entries.append(japa_entry)
+        japa_entry = JapaEntry(message.timestamp_str, contributor, japa_count)
+        japa_entries.append(japa_entry)
     return japa_entries

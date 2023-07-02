@@ -1,0 +1,63 @@
+<html>
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h3>Result Links</h3>
+    <ul>
+        <li><a href="https://docs.google.com/spreadsheets/d/1jwlWmIt-UoAeuBGuwxsyoHrcYoRTlGdjQd4WPHTTOv8/edit#gid=0">Master Sheet</a></li>
+        <li><a href="https://drive.google.com/drive/u/1/folders/1xgjbTXoQuELSFOXMt1iELzIIWqE78PBe">Google Drive</a></li>
+    </ul>
+    <h3>Metrics Report</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Messages Read</td>
+                <td>{{msgs_read}}</td>
+            </tr>
+            <tr>
+                <td>Valid Messages</td>
+                <td>{{valid_msg_count}}</td>
+            </tr>
+            <tr>
+                <td>Japa Entries Added</td>
+                <td>{{japa_entries_count}}</td>
+            </tr>
+            <tr>
+                <td>Unique Contributors</td>
+                <td>{{unique_contributor_count}}</td>
+            </tr>
+            <tr>
+                <td>Current Japa Count</td>
+                <td>{{current_japa_count}}</td>
+            </tr>
+            <tr>
+                <td>Total Japa Count</td>
+                <td>{{total_japa_count}}</td>
+            </tr>
+            <tr>
+                <td>Completion Percentage</td>
+                <td>{{completion_percentage}}</td>
+            </tr>
+            <tr>
+                <td>Deviation Percentage</td>
+                <td>{{deviation_percentage}}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
