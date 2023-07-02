@@ -1,3 +1,4 @@
+import re
 import time
 from typing import List
 
@@ -10,7 +11,7 @@ def clean_messages(messages: List[Message]) -> List[Message]:
     valid_messages: List[Message] = []
     invalid_messages: List[Message] = []
     for msg in messages:
-        if msg.content.startswith(constants.VALID_MSG_PREFIX) and "," in msg.content:
+        if re.match(r'^\s*\([a-zA-Z .]{4,}\)\s*[0-9]+\s*$', msg.content):
             valid_messages.append(msg)
         else:
             invalid_messages.append(msg)
