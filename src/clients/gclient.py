@@ -1,16 +1,20 @@
+import io
 import os
+import zipfile
 from typing import List, Any
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
 
-from src import constants
-# If modifying these scopes, delete the file creds.json.
+from src import constants, util
 from src.configs import env
 
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.file']
+# If modifying these scopes, delete the file creds.json.
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+SUPPORTED_INPUT_FILE_FORMATS = ["txt", "zip"]
 
 if not os.path.exists('secrets/credentials.json'):
     raise Exception("Could not find credentials to connect Google APIs. Please add it under secrets.")
@@ -97,3 +101,61 @@ def write_to_sheet(sheets, sheet_id: str, range_name: str, data: List[List[Any]]
     }
     sheets.values().update(spreadsheetId=sheet_id, range=range_name, valueInputOption='RAW',
                            body=body).execute()
+
+
+def get_folder_files(drive_service, folder_id: str):
+    response = drive_service.files().list(
+        q=f"'{folder_id}' in parents",
+        orderBy='createdTime desc',
+        fields='files(id, name, trashed)').execute()
+    print(response)
+    files = []
+    for file in response.get('files', []):
+        if not file.get('trashed'):
+            files.append(file)
+    return files
+
+
+def download_file(drive_service, file_id: str, output_path: str):
+    request = drive_service.files().get_media(fileId=file_id)
+    fh = io.FileIO(output_path, 'wb')
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
+
+
+def get_zip_as_txt_file(zip_file_path: str) -> str:
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        # TODO: Support multiple files in zip archive
+        file_name = zip_ref.namelist()[0]
+        with zip_ref.open(file_name) as file:
+            file_content = file.read().decode('utf-8')
+    os.remove(zip_file_path)
+    txt_file_path = zip_file_path.replace("zip", "txt")
+    with open(txt_file_path, "w+") as f:
+        f.write(file_content)
+    return txt_file_path
+
+
+def load_latest_file_from_drive(folder_id: str, output_path: str):
+    if env.mock: return ""
+    refresh_token()
+    drive_service = build('drive', 'v3', credentials=creds)
+    print(f"Searching for files in the folder: {folder_id}")
+    files = get_folder_files(drive_service, folder_id)
+    if not files: return None
+    print(f"Found {len(files)} files.")
+    latest_file = files[0]
+    file_ext = util.get_file_extension(latest_file.get("name"))
+    if file_ext not in SUPPORTED_INPUT_FILE_FORMATS:
+        print(f"Unsupported file extension: '{file_ext}'")
+        return None
+    file_path = os.path.join(output_path, util.get_unique_file_name(constants.INPUT_FILE_PREFIX) + '.' + file_ext)
+    print(f"Downloading file: {latest_file.get('id')} to {file_path}")
+    download_file(drive_service, latest_file.get('id'), file_path)
+    if file_ext == "zip":
+        print("Converting zip to txt file...")
+        return get_zip_as_txt_file(file_path)
+    else:
+        return file_path

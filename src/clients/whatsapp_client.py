@@ -1,3 +1,4 @@
+import os
 import time
 from datetime import datetime
 from typing import List
@@ -6,13 +7,19 @@ from whatstk import df_from_txt_whatsapp
 
 from src import constants, checkpoint
 from src.browser import Browser, BrowserType
+from src.clients import gclient
 from src.models.message import Message
 
 
-def read_msgs(read_mode: str, group_name: str, browser: str, file_path: str):
+def read_msgs(read_mode: str, group_name: str, browser: str, file_path: str, drive_folder_id: str):
     if read_mode == "browser":
         messages = get_msgs_from_browser(browser, group_name)
-    elif read_mode == "file":
+    elif read_mode == "local_file":
+        messages = get_msgs_from_file(file_path)
+    elif read_mode == "drive_file":
+        input_folder = os.path.dirname(file_path)
+        os.makedirs(input_folder, exist_ok=True)
+        file_path = gclient.load_latest_file_from_drive(drive_folder_id, input_folder)
         messages = get_msgs_from_file(file_path)
     else:
         raise Exception("Unsupported read mode")

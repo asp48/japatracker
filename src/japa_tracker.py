@@ -2,7 +2,7 @@ import configparser
 
 from clients import whatsapp_client
 from src import msg_cleaner, msg_parser, entry_publisher, util, constants, report_generator, checkpoint
-from src.clients import spreadsheet_client
+from src.clients import gclient
 
 config = configparser.ConfigParser()
 config.read("configs/config.ini")
@@ -11,14 +11,16 @@ print("Reading messages from whatsapp...")
 all_messages = whatsapp_client.read_msgs(config["whatsapp-config"]["read_mode"],
                                          config["whatsapp-config"]["group_name"],
                                          config["browser-config"]["browser"],
-                                         config["whatsapp-config"]["chats_file_path"])
+                                         config["whatsapp-config"]["chats_file_path"],
+                                         config["drive-config"]["input_folder_id"]
+                                         )
 print(f"Messages Read: {len(all_messages)}")
 
 valid_messages = []
 japa_entries = []
 
 if len(all_messages) > 0:
-    raw_sheet_id = spreadsheet_client.create_new_spreadsheet(
+    raw_sheet_id = gclient.create_new_spreadsheet(
         util.get_unique_file_name(constants.RAW_FILE_PREFIX),
         config["drive-config"]["folder_id"])
 

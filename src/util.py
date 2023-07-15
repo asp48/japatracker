@@ -71,3 +71,8 @@ def get_deviation_percentage(current_count: int):
     expected_japa_count = (diff_from_cur * constants.JAPA_YAGA_TARGET_COUNT) / constants.JAPA_YAGA_DURATION
     deviation = (current_count - expected_japa_count) * 100.0 / constants.JAPA_YAGA_TARGET_COUNT
     return format(deviation, ".2f")
+
+
+def get_file_extension(file_name: str) -> str:
+    tokens = file_name.split(".")
+    return tokens[1] if len(tokens) > 0 else ""

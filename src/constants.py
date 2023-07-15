@@ -14,10 +14,11 @@ UNPROCESSED_SUB_SHEET = "unprocessed"
 METRICS_REPORT_PREFIX = "metrics_report"
 RAW_METRICS_PREFIX = "raw_metrics"
 CHECKPOINT_FILE_PREFIX = "checkpoint"
+INPUT_FILE_PREFIX = "input"
 
 # DateTimeFormats
 WHATSAPP_TIMESTAMP_FORMAT = "%I:%M %p, %d/%m/%Y"
-MSG_DATE_TIME_FORMAT = "%d-%m-%Y %H:%M:%S"
+MSG_DATE_TIME_FORMAT = "%d-%m-%Y"
 
 # Metrics
 MSG_READ_COUNT = "msgs_read"
