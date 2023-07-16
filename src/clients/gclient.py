@@ -10,7 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
 from src import constants, util
-from src.configs import env
+from src import config_manager
 
 # If modifying these scopes, delete the file creds.json.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
@@ -45,7 +45,8 @@ def refresh_token():
 
 
 def create_new_spreadsheet(name: str, folder_id: str) -> str:
-    if env.mock: return ""
+    if not config_manager.get_instance().write_online:
+        return ""
     refresh_token()
     drive_service = build('drive', 'v3', credentials=creds)
     file_meta = {
@@ -59,7 +60,8 @@ def create_new_spreadsheet(name: str, folder_id: str) -> str:
 
 
 def write_new_sub_sheet(sheet_id: str, name: str, data: List[List[Any]], headers: List[str]):
-    if env.mock: return ""
+    if not config_manager.get_instance().write_online:
+        return
     refresh_token()
     sheets = build('sheets', 'v4', credentials=creds).spreadsheets()
     add_sheet_request = {
@@ -81,7 +83,8 @@ def write_new_sub_sheet(sheet_id: str, name: str, data: List[List[Any]], headers
 
 def append_to_sheet(sheet_id: str, data: List[List[Any]], headers: List[str],
                     sub_sheet_name: str = constants.DEFAULT_SHEET_NAME):
-    if env.mock: return ""
+    if not config_manager.get_instance().write_online:
+        return
     refresh_token()
     sheets = build('sheets', 'v4', credentials=creds).spreadsheets()
     print(f"Fetching sheet: {sheet_id} to know the current number of rows")
@@ -138,8 +141,9 @@ def get_zip_as_txt_file(zip_file_path: str) -> str:
     return txt_file_path
 
 
-def load_latest_file_from_drive(folder_id: str, output_path: str):
-    if env.mock: return ""
+def load_latest_file_from_drive(folder_id: str, output_path: str) -> str:
+    if not config_manager.get_instance().read_online:
+        return None
     refresh_token()
     drive_service = build('drive', 'v3', credentials=creds)
     print(f"Searching for files in the folder: {folder_id}")

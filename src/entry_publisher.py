@@ -4,7 +4,7 @@ from src import constants, util
 from src.clients import gclient
 from src.models.japa_entry import JapaEntry
 
-DATA_HEADERS = ["date", "contributor", "count"]
+DATA_HEADERS = ["Date", "Contributor", "Count"]
 
 
 def export(japa_entries: List[JapaEntry], master_sheet_id: str, raw_sheet_id: str):

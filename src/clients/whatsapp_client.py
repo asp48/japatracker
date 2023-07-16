@@ -1,26 +1,30 @@
 import os
 import time
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Any
 
 from whatstk import df_from_txt_whatsapp
 
 from src import constants, checkpoint
 from src.browser import Browser, BrowserType
 from src.clients import gclient
+from src.config_manager import ConfigManager
 from src.models.message import Message
 
 
-def read_msgs(read_mode: str, group_name: str, browser: str, file_path: str, drive_folder_id: str):
+def read_msgs(config_manager: ConfigManager):
+    read_mode = config_manager.get_whatsapp_read_mode()
     if read_mode == "browser":
+        browser = config_manager.get_browser()
+        group_name = config_manager.get_whatsapp_group_name()
         messages = get_msgs_from_browser(browser, group_name)
     elif read_mode == "local_file":
-        messages = get_msgs_from_file(file_path)
+        messages = get_msgs_from_file(config_manager.get_whatsapp_input_file())
     elif read_mode == "drive_file":
-        input_folder = os.path.dirname(file_path)
-        os.makedirs(input_folder, exist_ok=True)
-        file_path = gclient.load_latest_file_from_drive(drive_folder_id, input_folder)
-        messages = get_msgs_from_file(file_path)
+        os.makedirs(config_manager.input_dir, exist_ok=True)
+        drive_folder_id = config_manager.get_drive_input_folder_id()
+        file_path = gclient.load_latest_file_from_drive(drive_folder_id, config_manager.input_dir)
+        messages = get_msgs_from_file(file_path) if file_path is not None else []
     else:
         raise Exception("Unsupported read mode")
     return get_messages_from_checkpoint(messages)

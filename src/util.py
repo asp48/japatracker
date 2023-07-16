@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Any, Dict
 
 from src import constants
-from src.configs import env
+from src import config_manager
 
 
 def is_port_in_use(port: int) -> bool:
@@ -32,17 +32,19 @@ def write_list_to_local_output_file(prefix: str, data: List[List[Any]], headers:
 
 
 def write_str_to_local_output_file(prefix: str, data: str, extension: str, unique=True):
+    output_dir = config_manager.get_instance().output_dir
     if unique:
-        file_path = f"{env.output_dir}/{prefix}/{get_unique_file_name(prefix)}.{extension}"
+        file_path = f"{output_dir}/{prefix}/{get_unique_file_name(prefix)}.{extension}"
     else:
-        file_path = f"{env.output_dir}/{prefix}.{extension}"
+        file_path = f"{output_dir}/{prefix}.{extension}"
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, "w+") as file:
         file.write(data)
 
 
 def read_from_local_output_file(file_name: str, extension: str) -> str:
-    file_path = f"{env.output_dir}/{file_name}.{extension}"
+    output_dir = config_manager.get_instance().output_dir
+    file_path = f"{output_dir}/{file_name}.{extension}"
     if os.path.exists(file_path):
         with open(file_path, "r") as f:
             return f.read()
@@ -51,7 +53,8 @@ def read_from_local_output_file(file_name: str, extension: str) -> str:
 
 
 def fetch_metrics_from_previous_run(keys: str) -> Dict[str, Any]:
-    search_pattern = os.path.join(env.output_dir + "/" + constants.RAW_METRICS_PREFIX,
+    output_dir = config_manager.get_instance().output_dir
+    search_pattern = os.path.join(output_dir + "/" + constants.RAW_METRICS_PREFIX,
                                   constants.RAW_METRICS_PREFIX + '*.csv')
     matching_files = sorted(glob.glob(search_pattern), key=os.path.getmtime, reverse=True)
     result = {}
